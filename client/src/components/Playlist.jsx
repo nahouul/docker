@@ -36,7 +36,40 @@ export default function Playlist({ baseUrl, songs }) {
             .catch((error) => console.error("Erreur lors de la création de la playlist :", error));
     };
 
-    // Add a song to a playlist
+
+    const handleDeletePlaylist = (id) => {
+        if (window.confirm("Etes-vous sur de vouloir supprimer cette playlist ?")) {
+            Axios.delete(`${baseUrl}/playlists/${id}`)
+                .then(() => {
+                    alert("Playlist supprimée !");
+                    fetchPlaylists(); // Rafraîchit la liste des playlists
+                    if (selectedPlaylist === id) setSelectedPlaylist(null); // Désélectionne la playlist supprimée
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de la suppression de la playlist :", error);
+                });
+        }
+    };
+
+    const handleRenamePlaylist = (id) => {
+        const newName = window.prompt("Nouveau nom :");
+        if (newName && newName.trim() !== "") {
+            Axios.put(`${baseUrl}/playlists/${id}`, {
+                name: newName,
+                description: "",
+            })
+                .then(() => {
+                    alert("Playlist renommée !");
+                    fetchPlaylists();
+                })
+                .catch((error) => {
+                    console.error("Erreur lors du renommage de la playlist :", error);
+                });
+        }
+    };
+    
+
+    
     const addSongToPlaylist = (songId) => {
         if (!selectedPlaylist) {
             alert("Sélectionnez une playlist d'abord.");
@@ -74,6 +107,7 @@ export default function Playlist({ baseUrl, songs }) {
                     onChange={(e) => setNewPlaylist({ ...newPlaylist, description: e.target.value })}
                 />
                 <button onClick={createPlaylist}>Créer</button>
+                
             </div>
             <div className="playlist-list">
                 {playlists.map((playlist) => (
@@ -87,6 +121,14 @@ export default function Playlist({ baseUrl, songs }) {
                     >
                         <h4>{playlist.name}</h4>
                         <p>{playlist.description || "Pas de description"}</p>
+                        <button onClick={(e) => {
+                            e.stopPropagation();
+                            handleRenamePlaylist(playlist.id);
+                        }}>Renommer</button>
+                        <button onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePlaylist(playlist.id);
+                        }}>Supprimer</button>
                     </div>
                 ))}
             </div>
