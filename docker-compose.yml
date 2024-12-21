@@ -4,11 +4,11 @@ services:
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: games
+      MYSQL_DATABASE: song
       MYSQL_USER: root
       MYSQL_PASSWORD: root
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - ./mysql-data:/var/lib/mysql
     networks:
@@ -51,7 +51,7 @@ services:
       dockerfile: Dockerfile.nginx
     container_name: frontend
     environment:
-      - REACT_APP_BACKEND_URL=http://backend:3001
+      REACT_APP_BACKEND_URL: http://backend:3001
     ports:
       - "80:80"
     depends_on:

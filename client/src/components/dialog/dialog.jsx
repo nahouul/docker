@@ -5,50 +5,57 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
 
 export default function FormDialog(props) {
     const [editValues, setEditValues] = useState({
         id: props.id,
-        name: props.name,
-        cost: props.cost,
-        category: props.category,
+        title: props.title,
+        artist: props.artist,
+        album: props.album,
+        genre: props.genre,
+        duration: props.duration,
     });
 
-
     const handleEditValues = () => {
-        axios.put(`http://localhost:3001/edit`, {
+        axios.put("http://localhost:3001/edit", {
             id: editValues.id,
-            name: editValues.name,
-            cost: editValues.cost,
-            category: editValues.category,
+            title: editValues.title,
+            artist: editValues.artist,
+            album: editValues.album,
+            genre: editValues.genre,
+            duration: editValues.duration,
         })
         .then((response) => {
-            console.log("Game updated successfully:", response.data);
+            console.log("Chanson mise à jour avec succès :", response.data);
             handleClose();
+            props.refreshSongs(); 
         })
         .catch((error) => {
-            console.error("Error updating game:", error);
+            console.error("Erreur lors de la mise à jour de la chanson :", error);
         });
     };
-    
 
-    const handleDeleteGame = () => {
-        axios.delete(`${process.env.REACT_APP_BACKEND_URL}/delete/${editValues.id}`);
-    }
-
-    const handleChangeValues = (value)=>{
-        setEditValues(prevValues=>({
-                ...prevValues,
-                [value.target.id]: value.target.value,
+    const handleDeleteSong = () => {
+        axios.delete(`${process.env.REACT_APP_BACKEND_URL}/delete/${editValues.id}`)
+            .then((response) => {
+                console.log(response.data);
+                handleClose();
+                props.refreshSongs();
             })
-        )
+            .catch((error) => {
+                console.error("Erreur lors de la suppression de la chanson :", error);
+            });
     }
 
-    const handleClickOpen = () => {
-        props.setOpen(true);
-    };
+    const handleChangeValues = (event) => {
+        const { id, value } = event.target;
+        setEditValues(prevValues => ({
+            ...prevValues,
+            [id]: value,
+        }));
+    }
 
     const handleClose = () => {
         props.setOpen(false);
@@ -56,47 +63,65 @@ export default function FormDialog(props) {
 
     return (
         <div>
-
             <Dialog open={props.open} onClose={handleClose}>
-                <DialogTitle>Edit</DialogTitle>
+                <DialogTitle>Éditer la Chanson</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="name"
-                        label="Title"
-                        defaultValue={props.name}
+                        id="title"
+                        label="Titre"
+                        defaultValue={props.title}
                         type="text"
                         onChange={handleChangeValues}
                         fullWidth
                         variant="standard"
                     />
                     <TextField
-                        autoFocus
                         margin="dense"
-                        id="cost"
-                        label="Cost"
-                        defaultValue={props.cost}
+                        id="artist"
+                        label="Artiste"
+                        defaultValue={props.artist}
                         type="text"
                         onChange={handleChangeValues}
                         fullWidth
                         variant="standard"
                     />
                     <TextField
-                        autoFocus
                         margin="dense"
-                        id="category"
-                        label="Category"
-                        defaultValue={props.category}
+                        id="album"
+                        label="Album"
+                        defaultValue={props.album}
                         type="text"
+                        onChange={handleChangeValues}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        margin="dense"
+                        id="genre"
+                        label="Genre"
+                        defaultValue={props.genre}
+                        type="text"
+                        onChange={handleChangeValues}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        margin="dense"
+                        id="duration"
+                        label="Durée (secondes)"
+                        defaultValue={props.duration}
+                        type="number"
                         onChange={handleChangeValues}
                         fullWidth
                         variant="standard"
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleEditValues}>Save</Button>
+                    <Button onClick={handleClose}>Annuler</Button>
+                    <Button onClick={handleEditValues}>Enregistrer</Button>
+                    <Button onClick={handleDeleteSong} color="error">Supprimer</Button>
                 </DialogActions>
             </Dialog>
         </div>

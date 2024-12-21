@@ -1,44 +1,44 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import "./card.css"
 import FormDialog from "./dialog/dialog";
 import axios from "axios";
 
-
 const Card = (props) => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const cardOpen = () => {
-        setOpen(true)
+        setOpen(true);
     }
+
     const handleClose = () => {
         setOpen(false);
     };
 
-    const handleDeleteGame = () => {
-        axios.delete(`http://localhost:3001/delete/${props.id}`)
-            .then((response) => {
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.error("Error deleting game:", error);
-            });
-    };
-    
-
     return (
         <>
-        <FormDialog open={open} setOpen={setOpen} id={props.id} name={props.name} cost={props.cost} category={props.category} />
-        <div className="game-card">
-            <div className="info">
-                <h4>{props.name}</h4>
-                <p>${props.cost}</p>
-                <p>{props.category}</p>
+            <FormDialog
+                open={open}
+                setOpen={setOpen}
+                id={props.id}
+                title={props.title}
+                artist={props.artist}
+                album={props.album}
+                genre={props.genre}
+                duration={props.duration}
+                refreshSongs={props.refreshSongs}
+            />
+            <div className="song-card">
+                <div className="info">
+                    <h4>{props.title}</h4>
+                    <p>Artiste : {props.artist}</p>
+                    <p>Album : {props.album}</p>
+                    <p>Genre : {props.genre}</p>
+                    <p>Durée : {props.duration} secondes</p>
+                </div>
+                <div className="actions">
+                    <button className="edit" onClick={cardOpen}>Éditer</button>
+                </div>
             </div>
-            <div className="actions">
-                <button className="edit" onClick={cardOpen}>Edit</button>
-                <button className="delete" onClick={handleDeleteGame}>Delete</button>
-            </div>
-        </div>
         </>
     );
 };

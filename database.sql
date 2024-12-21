@@ -1,9 +1,11 @@
-CREATE DATABASE IF NOT EXISTS games;
-USE games;
+CREATE DATABASE IF NOT EXISTS music_app;
+USE music_app;
 
-CREATE TABLE IF NOT EXISTS games (
+CREATE TABLE IF NOT EXISTS songs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    cost INT NOT NULL,
-    category VARCHAR(255) NOT NULL
+    title VARCHAR(255) NOT NULL,
+    artist VARCHAR(255) NOT NULL,
+    album VARCHAR(255),
+    genre VARCHAR(100),
+    duration INT
 );

@@ -7,89 +7,74 @@ const db = mysql.createPool({
     host: "database",
     user: "root",
     password: "root",
-    database: "games",
+    database: "music_app",
     ssl: {
-        rejectUnauthorized: false, // Accepter les connexions non sécurisées
+        rejectUnauthorized: false, 
     },
 });
 
 server.use(express.json());
-
 server.use(cors());
 
-
+// Route pour ajouter une chanson
 server.post("/register", (req, res) => {
-    const { name } = req.body;
-    const { cost } = req.body;
-    const { category } = req.body;
+    const { title, artist, album, genre, duration} = req.body;
 
-    let sql = "INSERT INTO games (name, cost, category) VALUES (?,?,?)"
-    db.query(sql, [name, cost, category], (err,result) =>{
+    let sql = "INSERT INTO songs (title, artist, album, genre, duration) VALUES (?,?,?,?,?)";
+    db.query(sql, [title, artist, album, genre, duration], (err, result) => {
         if (err) {
             console.log(err);
-        }else{
-            console.log(result);
-        }
-    })
-});
-
-server.get("/games", (req, res) => {
-
-    let sql = "SELECT * FROM games";
-    db.query(sql, (err,result) =>{
-        if (err) {
-            console.log(err);
-        }else{
+            res.status(500).send({ error: "Erreur lors de l'ajout de la chanson" });
+        } else {
             res.send(result);
         }
-
-    })
+    });
 });
 
+server.get("/songs", (req, res) => {
+    let sql = "SELECT * FROM songs";
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send({ error: "Erreur lors de la récupération des chansons" });
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+// Route pour éditer une chanson
 server.put("/edit", (req, res) => {
-    const { id, name, cost, category } = req.body;
-    const sql = "UPDATE games SET name = ?, cost = ?, category = ? WHERE idgames = ?";
-    db.query(sql, [name, cost, category, id], (err, result) => {
+    const { id, title, artist, album, genre, duration} = req.body;
+    const sql = "UPDATE songs SET title = ?, artist = ?, album = ?, genre = ?, duration = ? WHERE id = ?";
+    db.query(sql, [title, artist, album, genre, duration, id], (err, result) => {
         if (err) {
             console.error(err);
-            return res.status(500).send({ error: "Failed to update the game" });
+            return res.status(500).send({ error: "Erreur lors de la mise à jour de la chanson" });
         }
         if (result.affectedRows === 0) {
-            return res.status(404).send({ message: "Game not found" });
+            return res.status(404).send({ message: "Chanson non trouvée" });
         }
-        res.send({ message: "Game updated successfully" });
+        res.send({ message: "Chanson mise à jour avec succès" });
     });
 });
 
 
 server.delete("/delete/:id", (req, res) => {
     const { id } = req.params;
-    const sql = "DELETE FROM games WHERE idgames = ?";
+    const sql = "DELETE FROM songs WHERE id = ?";
     db.query(sql, [id], (err, result) => {
         if (err) {
             console.error(err);
-            return res.status(500).send({ error: "Failed to delete the game" });
+            return res.status(500).send({ error: "Erreur lors de la suppression de la chanson" });
         }
         if (result.affectedRows === 0) {
-            return res.status(404).send({ message: "Game not found" });
+            return res.status(404).send({ message: "Chanson non trouvée" });
         }
-        res.send({ message: "Game deleted successfully" });
+        res.send({ message: "Chanson supprimée avec succès" });
     });
 });
 
-
-const handleDeleteGame = () => {
-    axios.delete(`${baseUrl}/delete/${props.id}`)
-        .then((response) => {
-            console.log(response);
-            // Actualisez la liste après suppression
-            setGames((prevGames) => prevGames.filter((game) => game.id !== props.id));
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-};
-
 server.listen(3001, () =>
-    console.log("Running in the port 3001")
+    console.log("Serveur en fonctionnement sur le port 3001")
 );
