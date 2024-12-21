@@ -5,8 +5,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: song
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
@@ -37,7 +35,7 @@ services:
       DB_HOST: database
       DB_USER: root
       DB_PASSWORD: root
-      DB_NAME: games
+      DB_NAME: music_app
     depends_on:
       - database
     networks:
